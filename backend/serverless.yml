@@ -7,28 +7,29 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs8.10
-
+  runtime: nodejs12
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
+  environment:
+    TODOS_TABLE_NAME: ${self.service.name}-${self.provider.stage}-todos-table
+    TODOS_TABLE_INDEX_NAME: ${self.service.name}-${self.provider.stage}-todos-table-index
+    ATTACHMENT_STORAGE: ${self.service.name}-${self.provider.stage}-attachment-storage
 
 functions:
-
   Auth:
-    handler: src/lambda/auth/auth0Authorizer.handler
+    handler: src/lambda/auth/auth0-authorizer.handler
 
   # TODO: Configure this function
   GetTodos:
-    handler: src/lambda/http/getTodos.handler
+    handler: src/lambda/http/get-todos.handler
     events:
       - http:
           method: get
           path: todos
 
   # TODO: Configure this function
-  GetTodos:
   CreateTodo:
-    handler: src/lambda/http/createTodo.handler
+    handler: src/lambda/http/create-todo.handler
     events:
       - http:
           method: post
@@ -36,7 +37,7 @@ functions:
 
   # TODO: Configure this function
   UpdateTodo:
-    handler: src/lambda/http/updateTodo.handler
+    handler: src/lambda/http/update-todo.handler
     events:
       - http:
           method: patch
@@ -44,7 +45,7 @@ functions:
 
   # TODO: Configure this function
   DeleteTodo:
-    handler: src/lambda/http/deleteTodo.handler
+    handler: src/lambda/http/delete-todo.handler
     events:
       - http:
           method: delete
@@ -52,7 +53,7 @@ functions:
 
   # TODO: Configure this function
   GenerateUploadUrl:
-    handler: src/lambda/http/generateUploadUrl.handler
+    handler: src/lambda/http/generate-upload-url.handler
     events:
       - http:
           method: post
@@ -61,3 +62,33 @@ functions:
 resources:
   Resources:
     # TODO: Add any necessary AWS resources
+    TodosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self.provider.environment.TODOS_TABLE_NAME}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: UserId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: TodoId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: UserId
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        LocalSecondaryIndexes:
+          - IndexName: ${self.provider.environment.TODOS_TABLE_INDEX_NAME}
+            KeySchema:
+              - AttributeName: UserId
+                KeyType: HASH
+              - AttributeName: TodoId
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+    AttachmentStorage:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self.provider.environment.ATTACHMENT_STORAGE}
