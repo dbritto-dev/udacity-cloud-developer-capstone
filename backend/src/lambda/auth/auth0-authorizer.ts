@@ -18,8 +18,10 @@ const jwksUrl = "https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.j
 
 export const handler = async (event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
   logger.info("Authorizing a user", event.authorizationToken);
+
   try {
     const jwtToken = await verifyToken(event.authorizationToken);
+
     logger.info("User was authorized", jwtToken);
 
     return {
@@ -54,6 +56,12 @@ export const handler = async (event: CustomAuthorizerEvent): Promise<CustomAutho
   }
 };
 
+function certToPEM(cert) {
+  if (/-----BEGIN CERTIFICATE-----/.test(cert)) return cert;
+  // prettier-ignore
+  return `-----BEGIN CERTIFICATE-----\n${cert.match(/.{1,64}/g).join("\n")}\n-----END CERTIFICATE-----\n`;
+}
+
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader);
   const jwt: Jwt = decode(token, { complete: true }) as Jwt;
@@ -66,14 +74,14 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
   }
 
   const kid = jwt.header.kid;
-  const jwks: Jwks = (await Axios.get(jwksUrl)) as Jwks;
+  const jwks: Jwks = await Axios.get(jwksUrl).then(({ data }) => data);
   const signingKey: Jwk | undefined = jwks.keys.find(key => key.kid === kid);
 
   if (!signingKey) {
     throw new Error(`Unable to find a signing key that matches '${kid}`);
   }
 
-  const publicKey: Buffer = Buffer.from(signingKey.x5c[0], "base64");
+  const publicKey: Buffer = certToPEM(signingKey.x5c[0]);
 
   return verify(token, publicKey) as JwtPayload;
 }
