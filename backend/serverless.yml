@@ -1,19 +1,39 @@
-service:
-  name: serverless-todo-app
+service: serverless-todo-app
 
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
+  - serverless-dynamodb-local
+  - serverless-s3-local
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 4000
+    lambdaPort: 4002
+    useChildProcesses: true
+
+  dynamodb:
+    start:
+      inMemory: true
+      migrate: true
+    stages:
+      - ${self:provider.stage}
+
+  s3:
+    host: localhost
+    directory: .s3
 
 provider:
   name: aws
-  runtime: nodejs12
+  runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
-    TODOS_TABLE_NAME: ${self.service.name}-${self.provider.stage}-todos-table
-    TODOS_TABLE_INDEX_NAME: ${self.service.name}-${self.provider.stage}-todos-table-index
-    ATTACHMENT_STORAGE: ${self.service.name}-${self.provider.stage}-attachment-storage
+    JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
+    TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
+    TODOS_TABLE_INDEX_NAME: ${self:service}-${self:provider.stage}-todos-table-index
+    ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-storage
 
 functions:
   Auth:
@@ -26,6 +46,8 @@ functions:
       - http:
           method: get
           path: todos
+          authorizer:
+            name: Auth
 
   # TODO: Configure this function
   CreateTodo:
@@ -65,7 +87,7 @@ resources:
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self.provider.environment.TODOS_TABLE_NAME}
+        TableName: ${self:provider.environment.TODOS_TABLE_NAME}
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: UserId
@@ -80,7 +102,7 @@ resources:
           - AttributeName: createdAt
             KeyType: RANGE
         LocalSecondaryIndexes:
-          - IndexName: ${self.provider.environment.TODOS_TABLE_INDEX_NAME}
+          - IndexName: ${self:provider.environment.TODOS_TABLE_INDEX_NAME}
             KeySchema:
               - AttributeName: UserId
                 KeyType: HASH
@@ -91,4 +113,4 @@ resources:
     AttachmentStorage:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self.provider.environment.ATTACHMENT_STORAGE}
+        BucketName: ${self:provider.environment.ATTACHMENT_STORAGE}
