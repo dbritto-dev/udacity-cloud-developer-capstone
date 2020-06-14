@@ -1,17 +1,23 @@
 import "source-map-support/register";
-
-import * as AWS from "aws-sdk";
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
 
+import { dynamodb } from "../../aws";
+import { getUserId } from "../../auth/utils";
 import { CreateTodoRequest } from "../../requests/CreateTodoRequest";
+import { TodoItem } from "../../models/TodoItem";
+import { createTodoItem } from "../../utils/todo";
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const newTodo: CreateTodoRequest = JSON.parse(event.body);
+  const userId = getUserId(event);
+  const request: CreateTodoRequest = JSON.parse(event.body);
+  const todoItem: TodoItem = createTodoItem({ userId, request });
 
-  // TODO: Implement creating a new TODO item
-  const dynamo = new AWS.Credentials()
-
-  return undefined;
+  try {
+    await dynamodb.put({ TableName: process.env.TODOS_TABLE_NAME, Item: todoItem }).promise();
+    return { statusCode: 201, body: JSON.stringify({ item: todoItem }) };
+  } catch (e) {
+    return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
+  }
 };
