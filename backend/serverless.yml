@@ -61,7 +61,7 @@ functions:
           authorizer:
             name: Auth
 
-  # TODO: Configure this function
+  # DONE: Configure this function
   UpdateTodo:
     handler: src/lambda/http/update-todo.handler
     events:
@@ -81,7 +81,7 @@ functions:
           authorizer:
             name: Auth
 
-  # TODO: Configure this function
+  # DONE: Configure this function
   GenerateUploadUrl:
     handler: src/lambda/http/generate-upload-url.handler
     events:
