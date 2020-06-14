@@ -38,7 +38,7 @@ functions:
   Auth:
     handler: src/lambda/auth/auth0-authorizer.handler
 
-  # TODO: Configure this function
+  # DONE: Configure this function
   GetTodos:
     handler: src/lambda/http/get-todos.handler
     events:
@@ -48,7 +48,7 @@ functions:
           authorizer:
             name: Auth
 
-  # TODO: Configure this function
+  # DONE: Configure this function
   CreateTodo:
     handler: src/lambda/http/create-todo.handler
     events:
@@ -68,7 +68,7 @@ functions:
           authorizer:
             name: Auth
 
-  # TODO: Configure this function
+  # DONE: Configure this function
   DeleteTodo:
     handler: src/lambda/http/delete-todo.handler
     events:
@@ -90,7 +90,7 @@ functions:
 
 resources:
   Resources:
-    # TODO: Add any necessary AWS resources
+    # DONE: Add any necessary AWS resources
     TodosTable:
       Type: AWS::DynamoDB::Table
       Properties:
