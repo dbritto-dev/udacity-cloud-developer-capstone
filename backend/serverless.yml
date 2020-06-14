@@ -15,14 +15,17 @@ custom:
 
   dynamodb:
     start:
+      port: 10000
       inMemory: true
       migrate: true
     stages:
       - ${self:provider.stage}
 
   s3:
-    host: localhost
+    port: 12000
     directory: .s3
+    cors: serverless-s3-local-cors.xml
+    allowMismatchedSignatures: true
 
 provider:
   name: aws
