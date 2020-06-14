@@ -1,11 +1,13 @@
 import "source-map-support/register";
 import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import * as middy from "middy";
+import { cors } from "middy/middlewares";
 
 import { dynamodb } from "../../aws";
 import { getUserId } from "../../auth/utils";
 
-export const handler: APIGatewayProxyHandler = async (
+const getTodo: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Get all TODO items for a current user
@@ -26,3 +28,5 @@ export const handler: APIGatewayProxyHandler = async (
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+export const handler: APIGatewayProxyHandler = middy(getTodo).use(cors());

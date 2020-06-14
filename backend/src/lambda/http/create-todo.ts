@@ -1,5 +1,7 @@
 import "source-map-support/register";
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
+import * as middy from "middy";
+import { cors } from "middy/middlewares";
 
 import { dynamodb } from "../../aws";
 import { getUserId } from "../../auth/utils";
@@ -7,7 +9,7 @@ import { CreateTodoRequest } from "../../requests/CreateTodoRequest";
 import { TodoItem } from "../../models/TodoItem";
 import { createTodoItem } from "../../utils/todo";
 
-export const handler: APIGatewayProxyHandler = async (
+const createTodo: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Implement creating a new TODO item
@@ -23,3 +25,5 @@ export const handler: APIGatewayProxyHandler = async (
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+export const handler: APIGatewayProxyHandler = middy(createTodo).use(cors());

@@ -48,6 +48,7 @@ functions:
       - http:
           method: get
           path: todos
+          cors: true
           authorizer:
             name: Auth
 
@@ -58,6 +59,7 @@ functions:
       - http:
           method: post
           path: todos
+          cors: true
           authorizer:
             name: Auth
 
@@ -68,6 +70,7 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+          cors: true
           authorizer:
             name: Auth
 
@@ -78,6 +81,7 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+          cors: true
           authorizer:
             name: Auth
 
@@ -88,6 +92,7 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
+          cors: true
           authorizer:
             name: Auth
 

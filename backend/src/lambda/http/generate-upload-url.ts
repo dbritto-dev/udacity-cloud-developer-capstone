@@ -1,9 +1,11 @@
 import "source-map-support/register";
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
+import * as middy from "middy";
+import { cors } from "middy/middlewares";
 
 import { s3 } from "../../aws";
 
-export const handler: APIGatewayProxyHandler = async (
+const generateUploadURL: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Return a presigned URL to upload a file for a TODO item with the provided id
@@ -23,3 +25,5 @@ export const handler: APIGatewayProxyHandler = async (
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
+
+export const handler: APIGatewayProxyHandler = middy(generateUploadURL).use(cors());
