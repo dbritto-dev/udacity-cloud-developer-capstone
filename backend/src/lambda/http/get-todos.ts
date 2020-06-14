@@ -9,12 +9,13 @@ export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Get all TODO items for a current user
+  const TABLE_NAME = process.env.TODOS_TABLE_NAME;
   const userId = getUserId(event);
 
   try {
     const response: DynamoDB.DocumentClient.QueryOutput = await dynamodb
       .query({
-        TableName: process.env.TODOS_TABLE_NAME,
+        TableName: TABLE_NAME,
         KeyConditionExpression: "userId = :userId",
         ExpressionAttributeValues: { ":userId": userId },
       })

@@ -8,15 +8,14 @@ export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Remove a TODO item by id
+  const TABLE_NAME = process.env.TODOS_TABLE_NAME;
   const userId = getUserId(event);
   const { todoId = "" } = event.pathParameters;
-
-  console.log(userId, todoId);
 
   try {
     await dynamodb
       .delete({
-        TableName: process.env.TODOS_TABLE_NAME,
+        TableName: TABLE_NAME,
         Key: { userId, todoId },
         ConditionExpression: "attribute_exists(todoId)",
       })
