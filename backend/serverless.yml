@@ -32,7 +32,6 @@ provider:
   environment:
     JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
-    TODOS_TABLE_INDEX_NAME: ${self:service}-${self:provider.stage}-todos-table-index
     ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-storage
 
 functions:
@@ -56,6 +55,8 @@ functions:
       - http:
           method: post
           path: todos
+          authorizer:
+            name: Auth
 
   # TODO: Configure this function
   UpdateTodo:
@@ -64,6 +65,8 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+          authorizer:
+            name: Auth
 
   # TODO: Configure this function
   DeleteTodo:
@@ -72,6 +75,8 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+          authorizer:
+            name: Auth
 
   # TODO: Configure this function
   GenerateUploadUrl:
@@ -80,6 +85,8 @@ functions:
       - http:
           method: post
           path: todos/{todoId}/attachment
+          authorizer:
+            name: Auth
 
 resources:
   Resources:
@@ -90,26 +97,16 @@ resources:
         TableName: ${self:provider.environment.TODOS_TABLE_NAME}
         BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
-          - AttributeName: UserId
+          - AttributeName: userId
             AttributeType: S
-          - AttributeName: createdAt
-            AttributeType: S
-          - AttributeName: TodoId
+          - AttributeName: todoId
             AttributeType: S
         KeySchema:
-          - AttributeName: UserId
+          - AttributeName: userId
             KeyType: HASH
-          - AttributeName: createdAt
+          - AttributeName: todoId
             KeyType: RANGE
-        LocalSecondaryIndexes:
-          - IndexName: ${self:provider.environment.TODOS_TABLE_INDEX_NAME}
-            KeySchema:
-              - AttributeName: UserId
-                KeyType: HASH
-              - AttributeName: TodoId
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
+
     AttachmentStorage:
       Type: AWS::S3::Bucket
       Properties:
