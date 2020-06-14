@@ -1,4 +1,3 @@
-import dateFormat from 'dateformat'
 import { History } from 'history'
 import update from 'immutability-helper'
 import * as React from 'react'
@@ -64,7 +63,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
     try {
       await deleteTodo(this.props.auth.getIdToken(), todoId)
       this.setState({
-        todos: this.state.todos.filter(todo => todo.todoId != todoId)
+        todos: this.state.todos.filter((todo) => todo.todoId != todoId)
       })
     } catch {
       alert('Todo deletion failed')
@@ -206,9 +205,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
   }
 
   calculateDueDate(): string {
-    const date = new Date()
-    date.setDate(date.getDate() + 7)
-
-    return dateFormat(date, 'yyyy-mm-dd') as string
+    const SEVEN_DAYS = 1000 * 60 * 60 * 24 * 7
+    return new Date(new Date().getTime() + SEVEN_DAYS).toISOString()
   }
 }
