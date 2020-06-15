@@ -36,6 +36,16 @@ provider:
     JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
     ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-storage
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
 
 functions:
   Auth:
