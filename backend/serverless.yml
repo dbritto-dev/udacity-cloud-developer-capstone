@@ -36,16 +36,16 @@ provider:
     JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
     ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-storage
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
+  # iamRoleStatements:
+  #   - Effect: Allow
+  #     Action:
+  #       - dynamodb:Query
+  #       - dynamodb:Scan
+  #       - dynamodb:GetItem
+  #       - dynamodb:PutItem
+  #       - dynamodb:UpdateItem
+  #       - dynamodb:DeleteItem
+  #     Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
 
 functions:
   Auth:
@@ -54,6 +54,11 @@ functions:
   # DONE: Configure this function
   GetTodos:
     handler: src/lambda/http/get-todos.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
     events:
       - http:
           method: get
@@ -65,6 +70,11 @@ functions:
   # DONE: Configure this function
   CreateTodo:
     handler: src/lambda/http/create-todo.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
     events:
       - http:
           method: post
@@ -76,6 +86,11 @@ functions:
   # DONE: Configure this function
   UpdateTodo:
     handler: src/lambda/http/update-todo.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
     events:
       - http:
           method: patch
@@ -87,6 +102,11 @@ functions:
   # DONE: Configure this function
   DeleteTodo:
     handler: src/lambda/http/delete-todo.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE_NAME}"
     events:
       - http:
           method: delete
