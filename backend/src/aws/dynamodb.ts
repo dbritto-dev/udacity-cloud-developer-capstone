@@ -1,5 +1,5 @@
-import { AWS, IS_OFFLINE } from "./aws";
+import * as AWS from "aws-sdk";
 
 export const dynamodb = new AWS.DynamoDB.DocumentClient(
-  IS_OFFLINE ? { endpoint: "http://localhost:10000" } : {}
+  process.env.IS_OFFLINE ? { endpoint: "http://localhost:10000" } : {}
 );

@@ -1,7 +1,7 @@
-import { AWS, IS_OFFLINE } from "./aws";
+import * as AWS from "aws-sdk";
 
 export const s3 = new AWS.S3(
-  IS_OFFLINE
+  process.env.IS_OFFLINE
     ? {
         s3ForcePathStyle: true,
         endpoint: "http://localhost:12000",
