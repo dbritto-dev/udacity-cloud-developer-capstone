@@ -1,6 +1,6 @@
-import * as AWS from "aws-sdk";
+import { sdk } from "./sdk";
 
-export const s3 = new AWS.S3(
+export const s3 = new sdk.S3(
   process.env.IS_OFFLINE
     ? {
         s3ForcePathStyle: true,
