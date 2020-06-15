@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios, { AxiosResponse } from "axios";
 import { JwtHeader, decode, verify } from "jsonwebtoken";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
@@ -106,7 +106,8 @@ export async function verifyToken(authHeader: string): Promise<JwtPayload> {
   }
 
   const kid = jwt.header.kid;
-  const jwks: Jwks = await Axios.get(jwksUrl).then(({ data }: { data: Jwks }) => data);
+  const response: AxiosResponse = await Axios.get(jwksUrl);
+  const jwks: Jwks = response.data;
   const signingKey: Jwk | undefined = jwks.keys.find(key => key.kid === kid);
 
   if (!signingKey) {
