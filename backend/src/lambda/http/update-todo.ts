@@ -1,42 +1,40 @@
 import "source-map-support/register";
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
-import * as middy from "middy";
-import { cors } from "middy/middlewares";
+import middy from "@middy/core";
+import jsonBodyParser from "@middy/http-json-body-parser";
+import validator from "@middy/validator";
+import cors from "@middy/http-cors";
 
-import { dynamodb } from "../../aws";
 import { UpdateTodoRequest } from "../../requests/UpdateTodoRequest";
-import { createTodoItem } from "../../utils/todo";
-import { getUserId } from "../../auth/utils";
+import { updateTodo } from "../data/todo";
+import { httpErrorHandler } from "../../middy";
+import schema from "../../schemas/update-todo-request.json";
+import { createLogger } from "../../utils/logger";
 
-const updateTodo: APIGatewayProxyHandler = async (
+const logger = createLogger("todo");
+
+const updateTodoHandler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Update a TODO item with the provided id using values in the "updatedTodo" object
-  const TABLE_NAME = process.env.TODOS_TABLE_NAME;
-  const userId = getUserId(event);
-  const { todoId = "" } = event.pathParameters;
+  logger.info("Updating a todo", { todoId: event.pathParameters });
 
   try {
     const request: UpdateTodoRequest = JSON.parse(event.body);
-    const todoItem = createTodoItem({ userId, request });
+    await updateTodo(event, request);
 
-    await dynamodb
-      .update({
-        TableName: TABLE_NAME,
-        Key: { userId, todoId },
-        UpdateExpression: "SET #name = :name, dueDate = :dueDate, done = :done",
-        ExpressionAttributeNames: { "#name": todoItem.name },
-        ExpressionAttributeValues: Object.entries(request).reduce<Object>(
-          (output, [key, value]) => ({ ...output, [`:${key}`]: value }),
-          {}
-        ),
-      })
-      .promise();
+    logger.info("Todo was updated successfully", { payload: request });
 
     return { statusCode: 204, body: null };
   } catch (e) {
+    logger.error("Todo was not updated successfully", { error: e.message });
+
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
 
-export const handler: APIGatewayProxyHandler = middy(updateTodo).use(cors());
+export const handler: APIGatewayProxyHandler = middy(updateTodoHandler)
+  .use(jsonBodyParser())
+  .use(validator({ inputSchema: schema }))
+  .use(httpErrorHandler())
+  .use(cors());
