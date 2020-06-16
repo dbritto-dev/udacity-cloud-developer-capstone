@@ -1,29 +1,43 @@
 import "source-map-support/register";
+import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from "aws-lambda";
-import * as middy from "middy";
-import { cors } from "middy/middlewares";
+import middy from "@middy/core";
+import jsonBodyParser from "@middy/http-json-body-parser";
+import validator from "@middy/validator";
+import cors from "@middy/http-cors";
 
-import { dynamodb } from "../../aws";
-import { getUserId } from "../../auth/utils";
 import { CreateTodoRequest } from "../../requests/CreateTodoRequest";
-import { TodoItem } from "../../models/TodoItem";
-import { createTodoItem } from "../../utils/todo";
+import { createTodo } from "../data/todo";
+import { httpErrorHandler } from "../../middy";
+import schema from "../../schemas/create-todo-request.json";
+import { createLogger } from "../../utils/logger";
 
-const createTodo: APIGatewayProxyHandler = async (
+const logger = createLogger("todo");
+
+const createTodoHandler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  // DONE: Implement creating a new TODO item
-  const TABLE_NAME = process.env.TODOS_TABLE_NAME;
-  const userId = getUserId(event);
-  const request: CreateTodoRequest = JSON.parse(event.body);
-  const todoItem: TodoItem = createTodoItem({ userId, request });
+  // DONE: Implement creating a new TODO items
+  logger.info("Creating a new todo");
 
   try {
-    await dynamodb.put({ TableName: TABLE_NAME, Item: todoItem }).promise();
-    return { statusCode: 201, body: JSON.stringify({ item: todoItem }) };
+    // @ts-ignore
+    const request: CreateTodoRequest = event.body;
+    // @ts-ignore
+    const response: DynamoDB.DocumentClient.PutItemOutput = await createTodo(event, request);
+
+    logger.info("Todo was created successfully", { payload: request });
+
+    return { statusCode: 201, body: JSON.stringify({ item: request, test: "test" }) };
   } catch (e) {
+    logger.error("Todo was not created successfully", { error: e.message });
+
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
 
-export const handler: APIGatewayProxyHandler = middy(createTodo).use(cors());
+export const handler: APIGatewayProxyHandler = middy(createTodoHandler)
+  .use(jsonBodyParser())
+  .use(validator({ inputSchema: schema }))
+  .use(httpErrorHandler())
+  .use(cors());
