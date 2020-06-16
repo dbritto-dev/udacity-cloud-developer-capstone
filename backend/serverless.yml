@@ -35,7 +35,7 @@ provider:
   environment:
     JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
-    ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-storage
+    ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-v4
 
 functions:
   Auth:
@@ -108,6 +108,11 @@ functions:
   # DONE: Configure this function
   GenerateUploadUrl:
     handler: src/lambda/http/generate-upload-url.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+        Resource: "arn:aws:s3:::${self:provider.environment.ATTACHMENT_STORAGE}/*"
     events:
       - http:
           method: post
@@ -139,3 +144,10 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:provider.environment.ATTACHMENT_STORAGE}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedHeaders: ["*"]
+              AllowedMethods: [GET, PUT]
+              MaxAge: 3600
