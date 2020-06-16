@@ -28,7 +28,7 @@ const createTodoHandler: APIGatewayProxyHandler = async (
 
     logger.info("Todo was created successfully", { payload: request });
 
-    return { statusCode: 201, body: JSON.stringify({ item: request, test: "test" }) };
+    return { statusCode: 201, body: JSON.stringify({ item: request }) };
   } catch (e) {
     logger.error("Todo was not created successfully", { error: e.message });
 
