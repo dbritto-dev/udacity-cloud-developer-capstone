@@ -33,7 +33,6 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
-    AWS_REGION: ${self:provider.region}
     JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
     ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-v4
