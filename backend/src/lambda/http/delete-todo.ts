@@ -1,31 +1,32 @@
 import "source-map-support/register";
+import { DynamoDB } from "aws-sdk";
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
-import * as middy from "middy";
-import { cors } from "middy/middlewares";
+import middy from "@middy/core";
+import cors from "@middy/http-cors";
 
-import { dynamodb } from "../../aws";
-import { getUserId } from "../../auth/utils";
+import { deleteTodo } from "../data/todo";
+import { createLogger } from "../../utils/logger";
 
-const deleteTodo: APIGatewayProxyHandler = async (
+const logger = createLogger("todo");
+
+const deleteTodoHandler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Remove a TODO item by id
-  const TABLE_NAME = process.env.TODOS_TABLE_NAME;
-  const userId = getUserId(event);
-  const { todoId = "" } = event.pathParameters;
+  logger.info("Deleting a todo:", { todoId: event.pathParameters.todoId });
 
   try {
-    await dynamodb
-      .delete({
-        TableName: TABLE_NAME,
-        Key: { userId, todoId },
-        ConditionExpression: "attribute_exists(todoId)",
-      })
-      .promise();
+    // @ts-ignore
+    const response: DynamoDB.DocumentClient.DeleteItemOutput = await deleteTodo(event);
+
+    logger.info("Todo was deleted successfully");
+
     return { statusCode: 204, body: null };
   } catch (e) {
+    logger.error("Todo was not deleted successfully", { error: e.message });
+
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
 
-export const handler: APIGatewayProxyHandler = middy(deleteTodo).use(cors());
+export const handler: APIGatewayProxyHandler = middy(deleteTodoHandler).use(cors());
