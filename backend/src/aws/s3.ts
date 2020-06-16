@@ -8,5 +8,5 @@ export const s3 = new sdk.S3(
         accessKeyId: "S3RVER",
         secretAccessKey: "S3RVER",
       }
-    : {}
+    : { signatureVersion: "v4" }
 );
