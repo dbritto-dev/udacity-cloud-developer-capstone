@@ -1,27 +1,28 @@
 import "source-map-support/register";
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from "aws-lambda";
-import * as middy from "middy";
-import { cors } from "middy/middlewares";
+import middy from "@middy/core";
+import cors from "@middy/http-cors";
 
-import { s3 } from "../../aws";
+import { createLogger } from "../../utils/logger";
+import { getPutSignedUrl } from "../service/s3";
+
+const logger = createLogger("signed-upload-url");
 
 const generateUploadURL: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   // DONE: Return a presigned URL to upload a file for a TODO item with the provided id
-  const SIGNED_URL_EXPIRE_SECONDS = 60 * 5;
-  const ATTACHMENT_STORAGE = process.env.ATTACHMENT_STORAGE;
-  const { todoId = "" } = event.pathParameters;
+  logger.info("Generating signed upload url", { todoId: event.pathParameters.todoId });
 
   try {
-    const uploadUrl = await s3.getSignedUrlPromise("putObject", {
-      Bucket: ATTACHMENT_STORAGE,
-      Key: todoId,
-      Expires: SIGNED_URL_EXPIRE_SECONDS,
-    });
+    const response: string = await getPutSignedUrl(event);
 
-    return { statusCode: 200, body: JSON.stringify({ uploadUrl }) };
+    logger.info("Signed upload url was generated successfully.");
+
+    return { statusCode: 200, body: JSON.stringify({ uploadUrl: response }) };
   } catch (e) {
+    logger.error("Signed upload url was not generated successfully.", { error: e.message });
+
     return { statusCode: 500, body: JSON.stringify({ error: e.message }) };
   }
 };
