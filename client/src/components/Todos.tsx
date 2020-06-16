@@ -127,6 +127,7 @@ export class Todos extends React.PureComponent<TodosProps, TodosState> {
             fluid
             actionPosition="left"
             placeholder="To change the world..."
+            value={this.state.newTodoName}
             onChange={this.handleNameChange}
           />
         </Grid.Column>
