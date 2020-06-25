@@ -1,6 +1,7 @@
 service: serverless-todo-app
 
 plugins:
+  - serverless-dotenv-plugin
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-dynamodb-local
@@ -33,7 +34,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
-    JWKS_ENDPOINT: https://udacity-serverless-todo.us.auth0.com/.well-known/jwks.json
+    JWKS_ENDPOINT: ${env:JWKS_ENDPOINT}
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
     ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-v4
 
