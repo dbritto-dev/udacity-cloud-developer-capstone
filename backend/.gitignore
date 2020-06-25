@@ -13,3 +13,7 @@ jspm_packages
 
 # Local S3
 .s3
+
+# Misc
+.env
+.env.*
