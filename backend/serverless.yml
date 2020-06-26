@@ -19,6 +19,13 @@ custom:
       port: 10000
       inMemory: true
       migrate: true
+
+    seed:
+      test:
+        sources:
+          - table: ${self:service}-${self:provider.stage}-todos-table
+            sources: [./src/seed/todos-table.json]
+
     stages:
       - ${self:provider.stage}
 
