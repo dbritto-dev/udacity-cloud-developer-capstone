@@ -1,4 +1,4 @@
-service: serverless-todo-app
+service: udacity-cloud-developer-capstone
 
 plugins:
   - serverless-dotenv-plugin
@@ -19,9 +19,10 @@ custom:
       port: 10000
       inMemory: true
       migrate: true
+      seed: true
 
     seed:
-      test:
+      dev:
         sources:
           - table: ${self:service}-${self:provider.stage}-todos-table
             sources: [./src/seed/todos-table.json]
@@ -43,7 +44,7 @@ provider:
   environment:
     JWKS_ENDPOINT: ${env:JWKS_ENDPOINT}
     TODOS_TABLE_NAME: ${self:service}-${self:provider.stage}-todos-table
-    ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment-v4
+    ATTACHMENT_STORAGE: ${self:service}-${self:provider.stage}-attachment
 
 functions:
   Auth:
