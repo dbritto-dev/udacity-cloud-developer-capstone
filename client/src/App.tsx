@@ -1,19 +1,25 @@
 import React from 'react';
+import { Router, Switch } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 import './styles.css';
 
-import { Dashboard } from 'components/Dashboard';
+import { ProtectedRoute } from 'components/ProtectedRoute';
+import { DashboardScreen } from 'screens/DashboardScreen';
+import { RedirectingScreen } from 'screens/RedirectingScreen';
+
+const history = createBrowserHistory();
 
 function App() {
   return (
-    <>
-      {/* <LoginButton />
-      <LogoutButton />
-      <Profile />
-      <Suspense fallback={<div>Loading...</div>}>
-        <Todos />
-      </Suspense> */}
-      <Dashboard />
-    </>
+    <Router history={history}>
+      <Switch>
+        <ProtectedRoute
+          path="/"
+          component={DashboardScreen}
+          onRedirecting={() => <RedirectingScreen />}
+        />
+      </Switch>
+    </Router>
   );
 }
 
