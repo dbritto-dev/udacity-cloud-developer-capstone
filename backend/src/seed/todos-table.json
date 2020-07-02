@@ -2,14 +2,16 @@
   {
     "userId": "google-oauth2|111728878342987011981",
     "todoId": "d249712b-6abc-4b3b-af99-98c11b66bfed",
-    "createdAt": "2020-06-26T00:21:56.808Z",
+    "createdAt": "2020-06-20T00:21:56.808Z",
+    "dueDate": "2020-06-20T00:28:56.808Z",
     "name": "Testing 1",
     "done": false
   },
   {
     "userId": "google-oauth2|111728878342987011981",
     "todoId": "fdf727ff-8238-47c2-901e-0ab65bd6db28",
-    "createdAt": "2020-06-26T00:22:54.336Z",
+    "createdAt": "2020-06-21T00:22:54.336Z",
+    "dueDate": "2020-06-21T00:29:54.336Z",
     "name": "Testing 2",
     "done": false
   }
