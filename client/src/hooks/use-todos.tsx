@@ -10,7 +10,7 @@ export const useTodos = (): QueryResult<Todos> => {
   const token = useToken();
   const response = useQuery(
     [`todos:all`, token],
-    (token) => createFetchWithToken(token)<Todos>(`${process.env.REACT_APP_API_URI}/todos`),
+    (_, token) => createFetchWithToken(token)<Todos>(`${process.env.REACT_APP_API_URI}/todos`),
     {
       enabled: Boolean(token),
     }
