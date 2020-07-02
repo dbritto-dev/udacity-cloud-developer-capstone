@@ -20,7 +20,8 @@ const updateTodoHandler: APIGatewayProxyHandler = async (
   logger.info("Updating a todo", { todoId: event.pathParameters });
 
   try {
-    const request: UpdateTodoRequest = JSON.parse(event.body);
+    // @ts-ignore
+    const request: UpdateTodoRequest = event.body;
     await updateTodo(event, request);
 
     logger.info("Todo was updated successfully", { payload: request });
