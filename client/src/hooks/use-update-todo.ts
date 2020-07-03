@@ -7,11 +7,11 @@ import { createFetchWithToken } from 'utils/unfetch';
 
 const API_URI = process.env.REACT_APP_API_URI;
 
-export const useUpdateTodo = (id: string) => {
+export const useUpdateTodo = (todoId: string) => {
   const token = useToken();
   const response = useMutation<any, UpdateTodoRequest, any, () => void>(
     async (data) =>
-      createFetchWithToken(token)(`${API_URI}/todos/${id}`, {
+      createFetchWithToken(token)(`${API_URI}/todos/${todoId}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' },
@@ -28,7 +28,7 @@ export const useUpdateTodo = (id: string) => {
         queryCache.setQueryData<{ items: Array<TodosItem> }>([`todos:all`, token], (todos) => ({
           ...todos,
           items: todos?.items.map((todo) =>
-            todo.todoId === id ? { ...todo, ...data } : todo
+            todo.todoId === todoId ? { ...todo, ...data } : todo
           ) as Array<TodosItem>,
         }));
 
