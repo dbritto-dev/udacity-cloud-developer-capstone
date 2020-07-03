@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { Navbar } from 'components/Navbar';
 import { fetch, createFetchWithToken } from 'utils/unfetch';
@@ -55,32 +55,53 @@ export const EditTodosItemScreen = () => {
           {/* <!-- Replace with your content --> */}
           <div className="px-4 py-6 sm:px-0">
             <div className="border-4 border-dashed border-gray-200 rounded-lg">
-              <form
-                onSubmit={(e) => {
-                  e.persist();
+              <div className="p-4">
+                <form
+                  onSubmit={(e) => {
+                    e.persist();
 
-                  handleSubmit(e);
-                }}
-              >
-                <input type="file" name="attachment" accept="image/*" required />
-                <button
-                  type="submit"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
+                    handleSubmit(e);
+                  }}
                 >
-                  <svg
-                    className="-ml-1 mr-2 h-5 w-5 text-gray-500"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                  <input type="file" name="attachment" accept="image/*" required />
+                  <button
+                    type="submit"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
                   >
-                    <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                  </svg>
-                  Upload
-                </button>
-              </form>
+                    <svg
+                      className="-ml-1 mr-2 h-5 w-5 text-gray-500"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Upload
+                  </button>
+                </form>
+                <div className="mt-4">
+                  <Link
+                    className="inline-flex items-center mr-4 px-4 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out"
+                    to="/"
+                  >
+                    <svg
+                      className="-ml-1 mr-2 h-5 w-5 text-gray-500"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
           {/* <!-- /End replace --> */}
