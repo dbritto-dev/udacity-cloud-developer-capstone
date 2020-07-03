@@ -1,6 +1,7 @@
 import { useMutation, queryCache } from 'react-query';
 
 import { CreateTodoRequest } from 'types/CreateTodoRequest';
+import { Todos } from 'types/Todos';
 import { TodosItem } from 'types/TodosItem';
 import { useToken } from 'hooks/use-token';
 import { createFetchWithToken } from 'utils/unfetch';
@@ -21,9 +22,9 @@ export const useCreateTodo = () => {
       onMutate: (data) => {
         queryCache.cancelQueries([`todos:all`, token]);
 
-        const rollbackData = queryCache.getQueryData<{ items: Array<any> }>([`todos:all`, token]);
+        const rollbackData = queryCache.getQueryData<Todos>([`todos:all`, token]);
 
-        queryCache.setQueryData<{ items: Array<TodosItem> }>([`todos:all`, token], (todos) => ({
+        queryCache.setQueryData<Todos>([`todos:all`, token], (todos) => ({
           ...todos,
           items: [
             {
