@@ -4,10 +4,13 @@ import { useAuth0 } from '@auth0/auth0-react';
 export const Navbar = () => {
   const { user, logout } = useAuth0();
   const [showMenu, setShowMenu] = useState(false);
-  const handleLogout = useCallback((e) => {
-    e.preventDefault();
-    logout();
-  }, []);
+  const handleLogout = useCallback(
+    (e) => {
+      e.preventDefault();
+      logout();
+    },
+    [logout]
+  );
 
   return (
     <nav className="bg-gray-800">
