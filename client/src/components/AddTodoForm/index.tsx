@@ -1,5 +1,7 @@
 import React, { useReducer, FormEvent } from 'react';
-import { uniqid } from 'utils/uniqid';
+
+import { getDueDate } from 'utils/get-due-date';
+import { CreateTodoRequest } from 'types/CreateTodoRequest';
 
 type AddTodoFormState = {
   name: string;
@@ -37,7 +39,7 @@ export const AddTodoForm = ({ handleSubmit }: AddTodoFormProps) => {
       onSubmit={(e) => {
         e.persist();
 
-        const data = { ...state, id: uniqid() };
+        const data: CreateTodoRequest = { ...state, dueDate: getDueDate() };
 
         handleSubmit(e, data);
       }}
