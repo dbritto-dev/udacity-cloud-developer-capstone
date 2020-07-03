@@ -1,4 +1,4 @@
-service: udacity-cloud-developer-capstone
+service: cloud-dev-capstone
 
 plugins:
   - serverless-dotenv-plugin
