@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
 export const Navbar = () => {
@@ -18,7 +19,9 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <img className="h-8 w-8" src="/logo192.png" alt="Workflow logo" />
+              <Link to="/">
+                <img className="h-8 w-8" src="/logo192.png" alt="Workflow logo" />
+              </Link>
             </div>
           </div>
           <div className="hidden md:block">
