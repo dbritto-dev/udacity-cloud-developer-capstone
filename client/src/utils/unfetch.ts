@@ -1,12 +1,19 @@
-import unfetch from 'unfetch'
+import unfetch from 'unfetch';
 
-export const fetch = async <T>(
-  input: RequestInfo,
-  options?: RequestInit
-): Promise<T> =>
+export const fetch = async <T>(input: RequestInfo, options?: RequestInit): Promise<T> =>
   new Promise((resolve, reject) =>
-    unfetch(input, options).then((r) => (r.ok ? resolve(r.json()) : reject(r)))
-  )
+    unfetch(input, options).then((r) => {
+      if (r.ok) {
+        try {
+          resolve(r.json());
+        } catch (e) {
+          resolve();
+        }
+      } else {
+        reject(r);
+      }
+    })
+  );
 
 export const createFetchWithToken = (token?: string) => <T>(
   input: RequestInfo,
@@ -18,10 +25,11 @@ export const createFetchWithToken = (token?: string) => <T>(
         options
           ? {
               ...options,
-              ...(options?.headers
-                ? { ...options.headers, Authorization: `Bearer ${token}` }
-                : { Authorization: `Bearer ${token}` })
+              headers: {
+                ...(options?.headers || {}),
+                Authorization: `Bearer ${token}`,
+              },
             }
           : { headers: { Authorization: `Bearer ${token}` } }
       )
-    : fetch<T>(input, options)
+    : fetch<T>(input, options);
