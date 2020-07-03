@@ -17,14 +17,14 @@ export const useDeleteTodo = (id: string) => {
       onMutate: () => {
         queryCache.cancelQueries([`todos:all`, token]);
 
-        const rollbackDate = queryCache.getQueryData<{ items: Array<any> }>([`todos:all`, token]);
+        const rollbackData = queryCache.getQueryData<{ items: Array<any> }>([`todos:all`, token]);
 
         queryCache.setQueryData<{ items: Array<any> }>([`todos:all`, token], (todos) => ({
           ...todos,
           items: todos?.items.filter((todo) => todo.todoId !== id) as Array<any>,
         }));
 
-        return () => queryCache.setQueryData([`todos:all`, token], rollbackDate);
+        return () => queryCache.setQueryData([`todos:all`, token], rollbackData);
       },
       onSuccess: () => queryCache.invalidateQueries([`todos:all`, token]),
       onError: (_error, _data, rollback) => rollback(),
